@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="icon" href="/files/logo.png">
+	<link rel="stylesheet" href="style">
+	<title>e commerce</title>
+	<style>
+		html{
+			scroll-behavior: smooth;
+		}
+	</style>
+</head>
+
+<body>
+	<header style="background-color: green;">
+		<img src="/files/logo.png"height="70"width="70" style="float: left;border-radius: 50%;">
+		<h2>Welcome to my Website</h2>		
+		<ul>
+			<li><a href="home">Home</a></li>
+			<li><a href="Groupchat" >CustomerCare</a></li>
+			<!-- <li><a href="chat">Chat</a></li> -->
+			<li><a href="cart">Cart (<span id="productsCountInCart"></span>)</a></li>
+			<li><a href="product">Add Product</a></li>
+			<li><a href="payment">Pay Payment</a></li>
+			<li><a href="#foot">About Us</a></li>
+		</ul>
+	</header>
+	<h1>Home</h1>
+	<blockquote class="animatedtype">Shop Like a Pro, Play Like a Champion</blockquote>
+	<ol id="products"></ol>
+	<script src="js/e-commerce.js" type="text/javascript"></script>
+	<script src="https://unpkg.com/realm-web@1.5.1/dist/bundle.iife.js"></script>
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+			console.log('DOMContentLoaded');
+			getProductsAsync('/api/products');
+			countProductInCart();
+		});
+
+		function addToCart(index) {
+			var listProduct = getItemInLocalStorage('products');
+			var oProduct = listProduct[index];
+			var qty = document.getElementById('qty_' + index).value;
+			if (!qty || qty == 0) {
+				alert('Quantity required.');
+			} else {
+				oProduct.qty = qty;
+				oProduct.total = parseFloat(oProduct.qty) * parseFloat(oProduct.price);
+				var productsInCart = getItemInLocalStorage('cart') || [];
+				productsInCart.push(oProduct);
+				setItemInLocalStorage('cart', JSON.stringify(productsInCart));
+			}
+			countProductInCart();
+		}
+
+		function getProductsAsync(theUrl) {
+			var xmlHttp = new XMLHttpRequest();
+			xmlHttp.onreadystatechange = function () {
+				if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+					setItemInLocalStorage('products', xmlHttp.responseText);
+					var listProduct = JSON.parse(xmlHttp.responseText);
+					var products = '';
+					for (var i = 0; i < listProduct.length; i++) {
+						products += `<li>
+							<img src="/files/${listProduct[i].path}" style="width:180px"><br />
+							${listProduct[i].name}<br />
+							${listProduct[i].price}<br />
+							${listProduct[i].code}<br />
+							<input type="number" style="width:50px; display:inline" id="qty_${i}" value="0" min="1" max="10"/>
+							<button onclick="addToCart(${i})">Add to Cart</button>
+						</li>`;
+					}
+					document.getElementById('products').innerHTML = products;
+				}
+			};
+			xmlHttp.open("GET", theUrl, true);
+			xmlHttp.send(null);
+		}
+
+		function countProductInCart() {
+			var productsInCart = getItemInLocalStorage('cart') || [];
+			document.getElementById('productsCountInCart').innerText = productsInCart.length;
+		}
+
+		function getItemInLocalStorage(key) {
+			return JSON.parse(localStorage.getItem(key));
+		}
+
+		function setItemInLocalStorage(key, value) {
+			localStorage.setItem(key, value);
+		}
+	</script>
+	<footer class="footer" id="foot">
+		<p>Asif Hossain</p>
+		<p>Student of ASP.Net</p>
+		<p>Round: 61</p>
+		<p>Found Me on Social Media</p>
+		<a href="https://www.facebook.com/profile.php?id=100082051366823" target="_blank"><img src="files/facebook.png" alt="Facebook" height="30"width="30"></a>
+		<a href="https://github.com/Fahimfoysal111"target="_blank"><img src="files/Github.webp"height="30"width="30"></a>
+		<a href="mailto:ah9312248@gmail.com"><img src="files/gmail_logo_hSykdMC.jpeg"height="30"width="30"></a>
+		
+	</footer>
+	<div class="about">
+		<p style="padding: 10px;margin: 0; width:100% ;background-color: rgb(20, 20, 20);height:20px;margin-top: 20px;width:1300px ;text-align: center;color: whitesmoke;">&copy;Asif all rights reserved</p>
+	</div>
+</body>
+
+</html>

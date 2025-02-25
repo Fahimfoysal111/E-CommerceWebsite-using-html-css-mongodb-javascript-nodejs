@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Cart: E-Commerce</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    header {
+      text-align: center;
+      background-color: green;
+      padding: 4px 0;
+      margin: -9px;
+    }
+
+    header ul {
+      list-style: none;
+    }
+
+    header ul li {
+      display: inline;
+      padding: 10px;
+      color: rgb(85, 169, 12);
+    }
+
+    header ul li a {
+      font-size: larger;
+      font-weight: bolder;
+      text-decoration: none;
+      color: rgb(190, 196, 185);
+      padding: 3px;
+      background-color: rgb(147, 37, 78);
+      border-radius: 4px;
+    }
+
+    a:hover {
+      background-color: rgb(241, 155, 155);
+      color: rgb(37, 29, 29);
+      padding: 8px;
+    }
+
+    footer {
+      background-color: darkblue;
+      text-align: center;
+      padding: 5px;
+      height: 190px;
+      width: 100%;
+      color: whitesmoke;
+
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: lightgrey;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    th,
+    td {
+      border: 1px solid #007BFF;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #007BFF;
+      color: white;
+    }
+
+    #form {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      margin: 0 auto;
+      width: 600px;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #007BFF;
+      border-radius: 4px;
+    }
+
+    button {
+      background-color: #08121d;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    tfoot {
+      background-color: #f8f9fa;
+    }
+
+    #grandTotal {
+      font-weight: bold;
+      color: #007BFF;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <img src="/files/logo.png" height="70" width="70" style="float: left;border-radius: 50%;">
+    <h2>Welcome to my Website</h2>
+    <ul>
+      <li><a href="home">Home</a></li>
+			<li><a href="Groupchat">GroupChat</a></li>
+      <li><a href="payment">Pay Payment</a></li>
+      <li><a href="cart">Cart (<span id="productsCountInCart"></span>)</a></li>
+
+    </ul>
+
+  </header>
+  <h1>Cart</h1>
+
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Code</th>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Quantity</th>
+        <th>Total</th>
+        <th>#</th>
+      </tr>
+    </thead>
+    <tbody id="products"></tbody>
+    <tfoot>
+      <tr>
+        <td colspan="5"></td>
+        <td>Grand Total:</td>
+        <td id="grandTotal" style="text-align: right;"></td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <div id="form">
+    <label>Name:</label>
+    <input type="text" id="name" placeholder="Your name" />
+    <label>Phone:</label>
+    <input type="text" id="phone" placeholder="Your phone" />
+    <label>Email:</label>
+    <input type="text" id="email" placeholder="Your email" />
+    <label>Address:</label>
+    <textarea id="address" cols="20" rows="5" placeholder="Your address"></textarea>
+    <button type="button" onclick="createSalesOrder();" id="btnSubmit">Submit</button>
+  </div>
+
+
+  <div>
+    <table>
+      <tr>
+        <th>Product Code</th>
+        <th>Quantity</th>
+        <th>Price per Product</th>
+        <th>Customer Name</th>
+        <th>Email</th>
+        <th>Address</th>
+        <th>Total Price</th>
+        <th>Order Time</th>
+        <th>Action</th>
+      </tr>
+      <tbody id="SalesOrder">
+       
+      </tbody>
+    </table>
+  </div>
+  <script src="js/e-commerce.js" type="text/javascript"></script>
+  <script src="https://unpkg.com/realm-web@1.5.1/dist/bundle.iife.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function (event) {
+      console.log('DOMContentLoaded');
+      countProductInCart();
+      getProductInCart();
+      getSalesOrderAsync('/api/SalesOrder', null);
+    });
+
+    function getProductInCart() {
+      var listProduct = getItemInLocalStorage('cart');
+      if (listProduct != null) {
+        var products = '';
+        var grandTotal = 0;
+        for (var i = 0; i < listProduct.length; i++) {
+          products += '<tr>'
+            + '<td><img src="/files/' + listProduct[i].path + '" style="width:80px"></td>'
+            + '<td>' + listProduct[i].code + '</td>'
+            + '<td>' + listProduct[i].name + '</td>'
+            + '<td>' + listProduct[i].price + '</td>'
+            + '<td>' + listProduct[i].qty + '</td>'
+            + '<td>' + listProduct[i].total + '</td>'
+            + '<td><button onclick="removeProductInCart(' + i + ');">Remove</button></td>'
+            + '</tr>';
+          grandTotal += parseFloat(listProduct[i].total);
+        }
+        document.getElementById('products').innerHTML = products;
+        document.getElementById('grandTotal').innerText = grandTotal;
+      } else {
+        document.getElementById('products').innerHTML = '';
+        document.getElementById('grandTotal').innerText = '';
+      }
+    }
+
+    function removeProductInCart(index) {
+      var listProduct = getItemInLocalStorage('cart');
+      var isConfirm = confirm('Are you sure you want to remove the product from the cart?');
+      if (isConfirm) {
+        if (listProduct != null) {
+          if (listProduct.length > 0) {
+            if (index > -1) {
+              listProduct.splice(index, 1);
+              setItemInLocalStorage('cart', JSON.stringify(listProduct));
+              getProductInCart();
+              countProductInCart();
+            }
+          }
+        }
+      }
+    }
+
+    function createSalesOrder() {
+      var name = document.getElementById('name');
+      var phone = document.getElementById("phone");
+      var email = document.getElementById("email");
+      var address = document.getElementById("address");
+      var listProduct = getItemInLocalStorage('cart');
+      if (listProduct == null || listProduct.length === 0) {
+        alert('Please add a product to the cart first.');
+      } else if (name.value.trim() === "") {
+        alert('Name is required');
+        name.focus();
+      } else if (phone.value.trim() === "") {
+        alert('Phone is required');
+        phone.focus();
+      } else if (email.value.trim() === "") {
+        alert('Email is required');
+        email.focus();
+      } else if (address.value.trim() === "") {
+        alert('Address is required');
+        address.focus();
+      } else {
+        document.getElementById("btnSubmit").innerText = "Submitting...";
+        document.getElementById("btnSubmit").disabled = true;
+        var jsObject = { name: name.value, email: email.value, phone: phone.value, address: address.value, products: listProduct };
+        var strJsObject = JSON.stringify(jsObject);
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+          if (this.readyState == 4 && this.status == 200) {
+            console.log(this.responseText);
+            resetSales();
+            countProductInCart();
+            getProductInCart();
+            alert('Order submitted successfully.');
+          }
+        };
+        xhttp.open("POST", "/api/createsales", true);
+        xhttp.setRequestHeader("Content-Type", "application/json");
+        xhttp.send(strJsObject);
+      }
+    }
+
+    function resetSales() {
+      document.getElementById('name').value = '';
+      document.getElementById('phone').value = '';
+      document.getElementById('email').value = '';
+      document.getElementById('address').value = '';
+      document.getElementById("btnSubmit").innerText = "Submit";
+      document.getElementById("btnSubmit").disabled = false;
+      removeItemInLocalStorage('cart');
+    }
+  </script>
+
+
+
+<script>
+  
+      function createProduct() {
+      var code = document.getElementById('code').value;
+      var name = document.getElementById("name").value;
+      var price = document.getElementById("price").value;
+      var fileInput = document.getElementById("path");
+      var fileName = fileInput.files[0].name;
+  
+      if (code === "" || name === "" || price === ""| fileName === "") {
+          alert('All fields are required');
+          return;
+      }
+      document.getElementById("btnSubmit").innerText = "Submitting...";
+      document.getElementById("btnSubmit").disabled = true;
+      var jsObject = { code: code, name: name, price: price,path: fileName };
+      var strJsObject = JSON.stringify(jsObject);
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function () {
+          if (this.readyState == 4 && this.status == 200) {
+              alert('Product submitted successfully.');
+              resetForm();
+          } else if (this.readyState == 4) {
+              alert('Error submitting product.');
+          }
+      };
+      xhttp.open("POST", "/api/createproduct", true);
+      xhttp.setRequestHeader("Content-Type", "application/json");
+      xhttp.send(strJsObject);
+  }
+  function resetForm() {
+      document.getElementById('code').value = '';
+      document.getElementById('name').value = '';
+      document.getElementById('price').value = '';
+      document.getElementById('path').value = '';
+      document.getElementById("btnSubmit").innerText = "Submit";
+      document.getElementById("btnSubmit").disabled = false;
+  }
+  //click submit then go to payment page
+function createSalesOrder() {
+  var name = document.getElementById('name');
+  var phone = document.getElementById("phone");
+  var email = document.getElementById("email");
+  var address = document.getElementById("address");
+  var listProduct = getItemInLocalStorage('cart');
+  
+  if (listProduct == null || listProduct.length === 0) {
+    alert('Please add a product to the cart first.');
+  } else if (name.value.trim() === "") {
+    alert('Name is required');
+    name.focus();
+  } else if (phone.value.trim() === "") {
+    alert('Phone is required');
+    phone.focus();
+  } else if (email.value.trim() === "") {
+    alert('Email is required');
+    email.focus();
+  } else if (address.value.trim() === "") {
+    alert('Address is required');
+    address.focus();
+  } else {
+    document.getElementById("btnSubmit").innerText = "Submitting...";
+    document.getElementById("btnSubmit").disabled = true;
+
+    var jsObject = {
+      name: name.value,
+      email: email.value,
+      phone: phone.value,
+      address: address.value,
+      products: listProduct
+    };
+
+    var strJsObject = JSON.stringify(jsObject);
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+      if (this.readyState == 4 && this.status == 200) {
+        console.log(this.responseText);
+        resetSales();
+        countProductInCart();
+        getProductInCart();
+        alert('Order submitted successfully. Please proceed to payment.');
+
+        window.location.href = "payment";
+      }
+    };
+
+    xhttp.open("POST", "/api/createsales", true);
+    xhttp.setRequestHeader("Content-Type", "application/json");
+    xhttp.send(strJsObject);
+  }
+}
+  
+  </script>
+
+
+  <script>
+   
+  
+    function getSalesOrderAsync(theUrl, callback) {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function () {
+            if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+                //callback(xmlHttp.responseText);
+
+                var listProduct;
+                 listProduct = JSON.parse(xmlHttp.responseText);
+                 var products = ''; // Initialize empty string for products
+  console.log(listProduct); // Log the list of products
+  var i;
+  
+  for (i = 0; i < listProduct.length; i++) { // Loop through each product in the list
+    console.log(listProduct[i]);
+    products += `
+        <tr>
+            <td>${listProduct[i].code}</td>
+            <td>${listProduct[i].qty}</td>
+            <td>${listProduct[i].price}</td>
+            <td>${listProduct[i].customer}</td>
+            <td>${listProduct[i].email}</td>
+            <td>${listProduct[i].address}</td>
+            <td>${listProduct[i].total}</td>
+            <td>${
+              listProduct[i].date }</td>
+            <td><button class="btn btn-danger" id="btndelete1" onclick="deleteSalesOrder('${listProduct[i]._id}')">Delete</button></td>
+        </tr>`;     
+  }
+  
+  document.getElementById('SalesOrder').innerHTML = products; // Set the HTML content of the table body
+            }
+        }
+        xmlHttp.open("GET", theUrl, true); // true for asynchronous 
+        xmlHttp.send(null);
+    
+    }
+
+    function deleteSalesOrder(productId) {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4) {
+            if (xmlHttp.status == 200) {
+                console.log('Product deleted successfully');
+                // Optionally, refresh the product list after deletion
+                getSalesOrderAsync('/api/SalesOrder', null);
+            } else {
+                console.error('Error deleting product:', xmlHttp.responseText);
+            }
+        }
+
+      document.getElementById("btndelete1").innerText = "Deleting.....";
+      document.getElementById("btndelete1").disabled = true;
+    };
+
+    xmlHttp.open("DELETE", `/api/SalesOrder/${productId}`, true);
+    xmlHttp.send(null);
+}
+ document.getElementById("btndelete1").disabled = false;
+  </script>
+  <footer>
+    <footer class="footer">
+      <div>
+        <p>Asif Hossain</p>
+        <p>Student of ASP.Net</p>
+        <p>Round: 61</p>
+        <p>Found Me on Social Media</p>
+        <a href="https://www.facebook.com/profile.php?id=100082051366823" target="_blank"><img src="files/facebook.png"
+            alt="Facebook" height="30" width="30"></a>
+        <a href="https://github.com/Fahimfoysal111" target="_blank"><img src="files/Github.webp" height="30"
+            width="30"></a>
+            <a href="mailto:ah9312248@gmail.com"><img src="files/gmail_logo_hSykdMC.jpeg"height="30"width="30"></a>
+      </div>
+    </footer>
+    <div class="about">
+      <p
+        style=" width:100% ;background-color: rgb(20, 20, 20);height:20px;width:100% ;text-align: center;color: whitesmoke;">
+        &copy;Asif all rights reserved</p>
+    </div>
+  </footer>
+</body>
+
+</html>

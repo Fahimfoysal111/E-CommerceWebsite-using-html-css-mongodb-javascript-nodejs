@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Method - Bangladesh</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color:rgb(99, 122, 151);
+    }
+
+    header {
+      text-align: center;
+      background-color: green;
+      padding: 4px 0;
+      margin: -9px;
+      position: relative;
+    }
+
+    header ul {
+      list-style: none;
+    }
+
+    header ul li {
+      display: inline;
+      padding: 10px;
+      color: rgb(85, 169, 12);
+    }
+
+    header ul li a {
+      font-size: larger;
+      font-weight: bolder;
+      text-decoration: none;
+      color: rgb(190, 196, 185);
+      padding: 3px;
+      background-color: rgb(147, 37, 78);
+      border-radius: 4px;
+    }
+
+    a:hover {
+      background-color: rgb(241, 155, 155);
+      color: rgb(37, 29, 29);
+      padding: 8px;
+    }
+    
+    .payment-container {
+      background-color: white;
+      padding: 60px;
+      border-radius: 30px;
+      box-shadow: 0 30px 30px rgba(0, 0, 0, 0.2);
+      max-width: 400px;
+      margin: 50px auto;
+    }
+    input:hover
+    {
+      background-color: lightskyblue;
+    }
+    
+    .payment-container h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #009688;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    .payment-icon {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .payment-icon img {
+      width: 60px;
+      height: 60px;
+    }
+    form
+    {
+      width: 405px;
+    }
+    .btn {
+      background-color: #009688;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 20px;
+      width: 100%;
+      cursor: pointer;
+    }
+    .btn:hover
+    {
+      background-color: rgb(232, 27, 27);
+    }
+
+    footer {
+      background-color: darkblue;
+      text-align: center;
+      padding: 5px;
+      color: whitesmoke;
+    }
+    form
+    {
+      width: 435px;
+    }
+
+    footer div {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header section -->
+  <header>
+    <img src="/files/logo.png" height="70" width="70" style="float: left;border-radius: 50%;">
+    <h2>Welcome to my Website</h2>
+    <ul>
+      <li><a href="home">Home</a></li>
+      <li><a href="Groupchat">Customer Care</a></li>
+      <li><a href="cart">Cart (<span id="productsCountInCart"></span>)</a></li>
+    </ul>
+  </header>
+
+  <!-- Payment Method Section -->
+  <div class="payment-container">
+    <h2>Payment Method</h2>
+    <div class="payment-icon">
+      <img id="payment-icon" src="files/bkash.png" alt="Payment Method Icon">
+    </div>
+    <form id="payment-form">
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" placeholder="Enter your name" required>
+      </div>
+      <div class="form-group">
+        <label for="mobile">Mobile Number</label>
+        <input type="number" id="mobile" placeholder="Enter your mobile number" required>
+      </div>
+      <div class="form-group">
+        <label for="payment-method">Select Payment Method</label>
+        <select id="payment-method" required>
+          <option value="bkash" data-icon="files/bkash.png">bKash</option>
+          <option value="rocket" data-icon="files/rocket.png">Rocket</option>
+          <option value="nagad" data-icon="files/nagad.png">Nagad</option>
+          <option value="visa" data-icon="files/visa.png">Visa/MasterCard</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="amount">Amount (BDT)</label>
+        <input type="number" id="amount" placeholder="Enter amount" required>
+      </div>
+      <button type="submit" class="btn">Proceed to Pay</button>
+    </form>
+  </div>
+
+  <!-- Footer section -->
+  <footer>
+    <p>Asif Hossain</p>
+    <p>Student of ASP.Net</p>
+    <p>Round: 61</p>
+    <p>Found Me on Social Media</p>
+    <div>
+      <a href="https://www.facebook.com/profile.php?id=100082051366823" target="_blank">
+        <img src="files/facebook.png" alt="Facebook" height="30" width="30">
+      </a>
+      <a href="https://github.com/Fahimfoysal111" target="_blank">
+        <img src="files/Github.webp" height="30" width="30">
+      </a>
+      <a href="mailto:ah9312248@gmail.com">
+        <img src="files/gmail_logo_hSykdMC.jpeg" height="30" width="30">
+      </a>
+    </div>
+  </footer>
+
+  <!-- About section under footer -->
+  <div>
+    <p style="background-color: black;color: white;text-align: center;width: 100%;height: 30px;">&copy;Asif all rights reserved</p>
+  </div>
+
+  <script>
+    // Function to update the payment icon dynamically
+    const paymentMethodSelect = document.getElementById('payment-method');
+    const paymentIcon = document.getElementById('payment-icon');
+
+    // Show icon immediately when an option is selected
+    paymentMethodSelect.addEventListener('change', function () {
+      const selectedOption = this.options[this.selectedIndex];
+      const iconPath = selectedOption.getAttribute('data-icon');
+      paymentIcon.src = iconPath;
+    });
+
+    document.getElementById('payment-form').addEventListener('submit', function (event) {
+      event.preventDefault();
+      const name = document.getElementById('name').value;
+      const mobile = document.getElementById('mobile').value;
+      const paymentMethod = document.getElementById('payment-method').value;
+      const amount = document.getElementById('amount').value;
+
+      alert(`Thank you ${name}! Your payment of BDT ${amount} via ${paymentMethod} is being processed.`);
+    });
+  </script>
+
+</body>
+
+</html>

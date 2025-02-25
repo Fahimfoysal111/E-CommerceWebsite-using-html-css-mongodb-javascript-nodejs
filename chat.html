@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat</title>
+  <link rel="stylesheet" href="style">
+  <style>
+    body
+{
+  background-color: lightcyan;
+}
+header
+{
+  text-align: center;
+  background-color: green;
+  padding: 4px 0;
+  margin: -9px;
+}
+header ul
+{
+list-style: none;
+} 
+header ul li
+{
+  display: inline;
+  padding-right: 20px;
+  
+  
+}
+header ul li a
+{
+  text-decoration: none;
+  color: aliceblue;
+  padding: 2px;
+  background-color: cadetblue;
+}
+ ul li
+{
+  display: inline;
+  padding-right: 20px;
+  
+  
+}
+header ul li a
+{
+  text-decoration: none;
+  color: aliceblue;
+  padding: 2px;
+  background-color: cadetblue;
+}
+a:hover
+{
+  background-color: black;
+  color: brown;
+  padding: 4px;
+  transition: 1s ease,1s ease-in
+}
+
+
+  </style>
+</head>
+<body>
+  <header>
+    <h2>Welcome to my Website</h2>
+    <ul>
+      <li><a href="home">Home</a></li>
+      <li><a href="chat">Chat</a></li>
+      <li><a href="cart">Cart (<span id="productsCountInCart"></span>)</a></li>
+
+    </ul>
+
+  </header>
+  <h1>Chat</h1>
+
+<div id="divSignUp">
+	<label>Name:</label><input type="text" id="txtUser" /><input type="button" id="btnSignUp" value="Sign Up">
+</div>
+
+<div id="divUser">
+
+	<strong>Welcome, </strong><span id="user"></span> 
+
+	<ul id="messages"></ul>
+
+	<div id="dropContainer">
+		<!-- <form id="formFileUpload">
+		  <input type="file" name="upload" id="upload" multiple>
+		  <input type="submit" value="Upload">
+		</form> -->
+		<form action="" >
+		  <input id="m" autocomplete="off" /><button>Send</button>
+		</form>
+	</div>
+
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/jquery-3.4.1.min.js"></script>
+<script src="js/e-commerce.js" type="text/javascript"></script>
+<script src="https://unpkg.com/realm-web@1.5.1/dist/bundle.iife.js"></script>
+<script>
+	document.addEventListener("DOMContentLoaded", function(event) { 
+		//do work
+		console.log('DOMContentLoaded');
+		countProductInCart();
+	});
+
+
+	var oUserInfo = null;
+	$(function () {
+		$('#divSignUp').show();
+		$('#divUser').hide();
+
+		$('#btnSignUp').click(function(){
+            		oUserInfo = { userId : $('#txtUser').val() };
+            		sessionStorage.setItem('userInfo', JSON.stringify(oUserInfo));
+            		//window.location.replace("http://localhost:3000/chat");
+			$('#divSignUp').hide();
+			$('#divUser').show();
+
+			var strUserInfo = sessionStorage.getItem('userInfo');
+			oUserInfo = JSON.parse(strUserInfo);
+
+			$('#user').text(oUserInfo.userId);
+       	});
+
+       	
+       	
+		if(oUserInfo === null) {
+			//window.location.replace("http://localhost:3000");
+			$('#divSignUp').show();
+		$('#divUser').hide();
+		}
+
+       	
+    
+       	var socket = io();
+       	$('#dropContainer').submit(function(e) {
+           	e.preventDefault(); // prevents page reloading
+           	var currentDateTime = new Date();
+           	var newDateTime = currentDateTime.toLocaleDateString() + ' ' + currentDateTime.toLocaleTimeString();
+           	var oMessage = { "userId":oUserInfo.userId, "message":$('#m').val(), "dateTime":newDateTime };
+           	socket.emit('chat message', oMessage );
+           	$('#m').val('');
+           	return false;
+       	});
+
+		socket.on('chat message', function(msg){
+			var htmlElements ='<strong>'+ msg.userId+'</strong>: '+msg.message+'<br/><span style="color:#7f8680">'+msg.dateTime+'</span>';
+			$('#messages').append($('<li>').html(htmlElements));
+		});
+
+		//form Submit
+		$("#formFileUpload").submit(function(evt){	 
+			evt.preventDefault();
+			var formData = new FormData($(this)[0]);
+			$.ajax({
+				url: 'uploadfile',
+				type: 'POST',
+				data: formData,
+				async: false,
+				cache: false,
+				contentType: false,
+				enctype: 'multipart/form-data',
+				processData: false,
+				success: function (response) {
+					var res = JSON.parse(response);
+					//alert(res.filePath);
+					var currentDateTime = new Date();
+					var newDateTime = currentDateTime.toLocaleDateString() + ' ' + currentDateTime.toLocaleTimeString();
+					var oMessage = { "userId":oUserInfo.userId, "message":'<a href="'+res.filePath+'" target="_blank">'+res.fileName+'</a>', "dateTime":newDateTime };
+					socket.emit('chat message', oMessage );
+					$('#upload').val('');
+				}
+			});
+			return false;
+		});
+
+});
+
+	// dragover and dragenter events need to have 'preventDefault' called
+// in order for the 'drop' event to register. 
+// See: https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Drag_operations#droptargets
+dropContainer.ondragover = dropContainer.ondragenter = function(evt) {
+  evt.preventDefault();
+};
+
+dropContainer.ondrop = function(evt) {
+  // pretty simple -- but not for IE :(
+  fileInput.files = evt.dataTransfer.files;
+
+  // If you want to use some of the dropped files
+  const dT = new DataTransfer();
+  dT.items.add(evt.dataTransfer.files[0]);
+  //dT.items.add(evt.dataTransfer.files[3]);
+  fileInput.files = dT.files;
+
+  evt.preventDefault();
+};
+</script>
+<footer>
+	<h3>Asif Hossain</h3>
+	<h4>Student of ASP.Net</h4>
+	<h5>Round: 61</h5>
+	<p>Found Me on Social Media</p>
+	<a href="https://www.facebook.com/profile.php?id=100082051366823" target="_blank"><img src="files/facebook.png" alt="Facebook" height="30"width="30"></a>
+	<a href="https://github.com/Fahimfoysal111"target="_blank"><img src="files/Github.webp"height="30"width="30"></a>
+</footer>
+<div class="about">
+	<p style="padding: 10px;margin: 0; width:100% ;background-color: rgb(20, 20, 20);height:20px;margin-top: 20px;width:1300px ;text-align: center;color: whitesmoke;">&copy;Asif all rights reserved</p>
+</div>
+</body>
+</html>

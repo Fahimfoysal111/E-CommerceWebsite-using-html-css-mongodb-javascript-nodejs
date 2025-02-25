@@ -1,0 +1,169 @@
+body
+{
+  background-color: lightcyan;
+}
+header
+{
+  text-align: center;
+  background-color: green;
+  padding: 4px 0;
+  margin: -9px;
+}
+header ul
+{
+list-style: none;
+} 
+header ul li
+{
+  display: inline;
+  padding: 10px;
+  color: rgb(85, 169, 12);
+}
+header ul li a
+{
+  font-size: larger;
+  font-weight: bolder;
+  text-decoration: none;
+  color: rgb(190, 196, 185);
+  padding: 3px;
+  background-color: rgb(147, 37, 78);
+  border-radius: 4px;
+}
+a:hover
+{
+  background-color: rgb(241, 155, 155);
+  color: rgb(37, 29, 29);
+  padding: 8px;
+}
+.input {display: flex;
+justify-content: space-between;
+align-items: center;
+background-color: #181818;
+padding: 20px 10px;
+width: 100%;
+font-size: 20px;
+position: fixed;
+}
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+footer
+{
+  background-color:darkblue;
+  text-align: center;
+  padding: 10px;
+  height:200px;
+  color: rgb(1, 13, 15);
+  width: 100%;
+  align-items: center;
+  color:whitesmoke;
+  line-break: normal;
+  object-fit: cover;
+  word-spacing: normal;
+  
+ 
+}
+.animatedtype
+{
+  font-size: x-large;
+  background-color:lightskyblue;
+  color: rgb(13, 54, 95);
+  animation: fadeIn 5s ease-in infinite ,3s ease-out;
+  text-align: center;
+  text-shadow: 0px 2px 3px rgb(104, 141, 179);
+}
+.animatedtype:hover
+{
+  background-color: #28a745;
+}
+@keyframes fadeIn
+{
+  0%{opacity: 0;}
+  50%{opacity: 1;}
+  100%{opacity:0 ;}
+}
+header {
+  background-color: #333;
+  color: white;
+  padding: 15px;
+  text-align: center;
+}
+
+header ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+header ul li {
+  display: inline;
+  margin-right: 20px;
+}
+
+header ul li a {
+  color: rgb(141, 174, 176);
+  text-decoration: none;
+}
+
+#products {
+  display: flex;
+  flex-wrap: wrap; 
+  justify-content: space-between;
+  padding: 10px;
+  list-style-type: none;
+}
+
+#products li {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin-bottom: 20px;
+  width: 18%; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.9);
+  border-radius: 10px;
+
+
+}
+
+#products li img {
+  max-width: 50%;
+  height: auto;
+  margin-bottom: 15px;
+  border-radius: 30%;
+  border: 1px solid rgb(222, 6, 88);
+
+}
+#products li:hover
+{
+  transform: translateY(-20px);
+  transition: all .5s ease-in-out;
+   
+}
+
+#products li input[type="number"] {
+  margin-top: 10px;
+  padding: 5px;
+}
+
+#products li button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border-radius: 5px;
+}
+
+#products li button:hover {
+  background-color: #7fa735;
+  padding: 13px;
+  border-radius: 30px;
+ 
+}
